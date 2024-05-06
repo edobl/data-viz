@@ -433,7 +433,7 @@ elif page == "Interactive graphs":
             "values": remaining_citations,
         })
 
-
+    st.subheader('Interactive Treemap of Citation Distribution')
     df = pd.DataFrame(rows)
     df['values'].fillna(0, inplace=True)
     df = df[df['values'] > 0]
@@ -450,8 +450,7 @@ elif page == "Interactive graphs":
     # Create the treemap using the custom color scale
     fig_treemap = px.treemap(df, path=['parents', 'labels'], values='values',
                             color='values', hover_data=['labels'],
-                            color_continuous_scale=custom_scale,
-                            title='Interactive Treemap of Citation Distribution')
+                            color_continuous_scale=custom_scale)
 
     fig_treemap.update_layout(autosize=False, coloraxis_colorbar_title= "Citations",  
                               font=dict(family="Helvetica, Arial, sans-serif", 
@@ -560,7 +559,7 @@ elif page == "Interactive graphs":
     }
         return scales.get(country, 5)  # Default scale
     
-    st.title("Global Distribution of Professors")
+    st.subheader("Global Distribution of Professors")
 
     with st.container():
         country = st.selectbox('Select a Country:', ['All'] + sorted(df_geo['Country'].unique().tolist()))
@@ -642,7 +641,7 @@ elif page == "Creative Visualization":
         return book_img
 
     def main():
-        st.title("Book Publications Visualization")
+        st.subheader("Book Publications Visualization")
 
         # Hard-code the path to the book image that's already on the server
         book_img_path = 'Creative Vis.png'  # Update this path
