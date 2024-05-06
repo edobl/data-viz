@@ -29,7 +29,7 @@ professors_names = list(data.keys())
 
 # Page Navigation
 if page == "Main Page":
-    st.title("Main Page - Professor Selection and Metrics")
+    st.title("Professor Selection and Metrics")
 
 # Professor selection and information display
 selected_professor = st.selectbox('Select a Professor', professors_names)
