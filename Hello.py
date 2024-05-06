@@ -36,7 +36,7 @@ if page == "Main Page":
     if selected_professor:
         prof_info = data[selected_professor]
         
-            with st.container():
+    with st.container():
         st.write("---")
         left_column, middle_column, right_column = st.columns(3)
         
