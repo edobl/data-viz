@@ -35,52 +35,51 @@ if page == "Main Page":
     selected_professor = st.selectbox('Select a Professor', professors_names)
     if selected_professor:
         prof_info = data[selected_professor]
-        st.write(f"Professor: {selected_professor}")
-        st.write(f"H-index: {prof_info.get('Index_H', 'N/A')}")
-        st.write(f"Citations: {prof_info.get('Citation_Count', 'N/A')}")  # Corrected key
-        st.write(f"Publications: {prof_info.get('Paper_Count', 'N/A')}")  # Corrected key
-        st.write(f"Country: {prof_info.get('Country', 'N/A')}")
+        
+            with st.container():
+        st.write("---")
+        left_column, middle_column, right_column = st.columns(3)
+        
+        with left_column:
+            st.header("Professor Information")
+            st.write(f"**Professor:** {selected_professor}")
+            st.write(f"**H-index:** {prof_info.get('Index_H', 'N/A')}")
+            st.write(f"**Citations:** {prof_info.get('Citation_Count', 'N/A')}")
+            st.write(f"**Publications:** {prof_info.get('Paper_Count', 'N/A')}")
+            st.write(f"**Country:** {prof_info.get('Country', 'N/A')}")
 
-        # Publication with the most citations
-        if 'Papers' in prof_info:
-            publications = prof_info['Papers']
-            if publications:
-                most_cited_publication = max(publications, key=lambda x: x.get('Citation_Count', 0))
-                st.write("Publication with Most Citations:")
-                st.write(f"Title: {most_cited_publication.get('Title', 'N/A')}")
-                st.write(f"Citations: {most_cited_publication.get('Citation_Count', 'N/A')}")
-                st.write(f"Year: {most_cited_publication.get('Year_of_Publication', 'N/A')}")
+        with middle_column:
+            st.header("Most Cited Publication")
+            if 'Papers' in prof_info:
+                publications = prof_info['Papers']
+                if publications:
+                    most_cited_publication = max(publications, key=lambda x: x.get('Citation_Count', 0))
+                    st.write(f"**Title:** {most_cited_publication.get('Title', 'N/A')}")
+                    st.write(f"**Citations:** {most_cited_publication.get('Citation_Count', 'N/A')}")
+                    st.write(f"**Year:** {most_cited_publication.get('Year_of_Publication', 'N/A')}")
 
-                # Add more info about the top publication if available
-                # Add more info about the top publication if available
-                authors_details = most_cited_publication.get('Authors_Details', [])
-                if authors_details:
-                    if isinstance(authors_details, list):
-                        authors = ', '.join(author.get('Name', 'N/A') for author in authors_details)
-                        if all(author.get('Name') == 'N/A' for author in authors_details):
-                            authors = 'N/A'
-                    else:
-                        authors = ', '.join(authors_details)
-                        st.write(f"Authors: {authors}")
+                    authors_details = most_cited_publication.get('Authors_Details', [])
+                    if authors_details:
+                        authors = ', '.join(author.get('Name', 'N/A') for author in authors_details if author.get('Name') != 'N/A')
+                        st.write(f"**Authors:** {authors if authors else 'N/A'}")
 
-                st.write(f"Venue: {most_cited_publication.get('Venue_Name', 'N/A')}")
-                st.write(f"URL: {most_cited_publication.get('Paper_URL', 'N/A')}")
+                    st.write(f"**Venue:** {most_cited_publication.get('Venue_Name', 'N/A')}")
+                    st.write(f"**URL:** {most_cited_publication.get('Paper_URL', 'N/A')}")
 
-        # Top Co-Authors (showing only the top three)
-        if 'Co-authors' in prof_info:
-            coauthors = prof_info['Co-authors']
-            # Sorting co-authors by collaborations, descending, and picking the top three
-            top_coauthors = sorted(coauthors.items(), key=lambda item: item[1], reverse=True)[:5]
-            st.write("Top Co-Authors:")
-            for coauthor, collaborations in top_coauthors:
-                st.write(f"Co-author: {coauthor}, Collaborations: {collaborations}")
+        with right_column:
+            st.header("Top Co-Authors & Publications")
+            if 'Co-authors' in prof_info:
+                coauthors = prof_info['Co-authors']
+                top_coauthors = sorted(coauthors.items(), key=lambda item: item[1], reverse=True)[:5]
+                st.write("**Top Co-Authors:**")
+                for coauthor, collaborations in top_coauthors:
+                    st.write(f"{coauthor}, Collaborations: {collaborations}")
 
-        # Publication Types Distribution (assuming 'Publication_Types' structure remains the same)
-        if 'Publication_Types' in prof_info:
-            publication_types = prof_info['Publication_Types']
-            st.write("Publication Types Distribution:")
-            for pub_type, count in publication_types.items():
-                st.write(f"{pub_type}: {count}")
+            if 'Publication_Types' in prof_info:
+                publication_types = prof_info['Publication_Types']
+                st.write("**Publication Types Distribution:**")
+                for pub_type, count in publication_types.items():
+                    st.write(f"{pub_type}: {count}")
 
 elif page == "Dashboard 1: Professors":
     st.title("Dashboard 1: Professors")
