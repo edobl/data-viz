@@ -82,7 +82,7 @@ if page == "Main Page":
                     st.write(f"{pub_type}: {count}")
 
     G = nx.Graph()
-    professor_data = data.get(selected_prof, {})
+    professor_data = data.get(selected_professor, {})
     co_authors = professor_data.get('Co-authors', {})
 
     # Populate your graph with edges
