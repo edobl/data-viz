@@ -1,0 +1,78 @@
+/* General body styles */
+body {
+    font-family: 'Arial', sans-serif; /* Sets the font for the content */
+    background-color: #f4f9f9; /* Light grey background for the app */
+    color: #333; /* Dark grey text for readability */
+    margin: 0;
+    padding: 0;
+}
+
+/* Header styles */
+header {
+    background-color: #007BFF; /* Blue background for the top header */
+    color: white; /* White text color */
+    padding: 20px; /* Padding around text in the header */
+    text-align: center; /* Center-align the header text */
+}
+
+/* Styling for buttons */
+button {
+    background-color: #4CAF50; /* Green background for buttons */
+    color: white; /* White text on buttons */
+    padding: 10px 20px; /* Top/bottom and left/right padding */
+    border: none; /* No border by default */
+    border-radius: 5px; /* Rounded corners for the buttons */
+    cursor: pointer; /* Cursor appears as a pointer on hover */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+button:hover {
+    background-color: #45a049; /* Darker green background on hover */
+}
+
+/* Styling for links */
+a {
+    color: #007BFF; /* Standard link color */
+    text-decoration: none; /* No underline */
+}
+
+a:hover {
+    text-decoration: underline; /* Underline on hover */
+}
+
+/* Custom container styling */
+.container {
+    padding: 20px; /* Padding inside the container */
+    margin-top: 20px; /* Space above the container */
+    background-color: white; /* White background for containers */
+    border-radius: 8px; /* Rounded corners for containers */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Subtle shadow for 3D effect */
+}
+
+/* Responsive grid layout for sections */
+.section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between; /* Space between the columns */
+}
+
+.column {
+    flex: 1 1 200px; /* Flexibility and basis of each column */
+    margin: 10px; /* Margin around columns */
+}
+
+
+@media only screen and (max-width: 768px) {
+    .section {
+        flex-direction: column;
+    }
+
+    .column {
+        flex: 1 1 100%; /* Each column takes full width on smaller screens */
+        margin: 10px 0; /* Adjust margin for vertical stacking */
+    }
+
+    header {
+        padding: 10px; /* Reduce padding on smaller screens */
+    }
+}

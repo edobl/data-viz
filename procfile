@@ -1,0 +1,1 @@
+web: streamlit run project2.py --server.enableCORS false
