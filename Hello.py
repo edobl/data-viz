@@ -654,7 +654,7 @@ elif page == "Creative Visualization":
         st.title("Book Publications Visualization")
 
         # Hard-code the path to the book image that's already on the server
-        book_img_path = 'Creative Visualization/Creative Vis.png'  # Update this path
+        book_img_path = 'Creative Vis.png'  # Update this path
 
         # Process the image
         result_img = draw_overlay(book_img_path)
