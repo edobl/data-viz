@@ -29,132 +29,59 @@ professors_names = list(data.keys())
 
 # Page Navigation
 if page == "Main Page":
-    st.title("Professor Selection and Metrics")
+    st.title("Main Page - Professor Selection and Metrics")
 
-# Professor selection and information display
-selected_professor = st.selectbox('Select a Professor', professors_names)
-if selected_professor:
-    prof_info = data[selected_professor]
+    # Professor selection and information display
+    selected_professor = st.selectbox('Select a Professor', professors_names)
+    if selected_professor:
+        prof_info = data[selected_professor]
+        st.write(f"Professor: {selected_professor}")
+        st.write(f"H-index: {prof_info.get('Index_H', 'N/A')}")
+        st.write(f"Citations: {prof_info.get('Citation_Count', 'N/A')}")  # Corrected key
+        st.write(f"Publications: {prof_info.get('Paper_Count', 'N/A')}")  # Corrected key
+        st.write(f"Country: {prof_info.get('Country', 'N/A')}")
 
-    with st.container():
-        st.write("---")
-        left_column, middle_column, right_column = st.columns(3)
-        
-        with left_column:
-            st.header("Professor Information")
-            st.write(f"**Professor:** {selected_professor}")
-            st.write(f"**H-index:** {prof_info.get('Index_H', 'N/A')}")
-            st.write(f"**Citations:** {prof_info.get('Citation_Count', 'N/A')}")
-            st.write(f"**Publications:** {prof_info.get('Paper_Count', 'N/A')}")
-            st.write(f"**Country:** {prof_info.get('Country', 'N/A')}")
+        # Publication with the most citations
+        if 'Papers' in prof_info:
+            publications = prof_info['Papers']
+            if publications:
+                most_cited_publication = max(publications, key=lambda x: x.get('Citation_Count', 0))
+                st.write("Publication with Most Citations:")
+                st.write(f"Title: {most_cited_publication.get('Title', 'N/A')}")
+                st.write(f"Citations: {most_cited_publication.get('Citation_Count', 'N/A')}")
+                st.write(f"Year: {most_cited_publication.get('Year_of_Publication', 'N/A')}")
 
-        with middle_column:
-            st.header("Most Cited Publication")
-            if 'Papers' in prof_info:
-                publications = prof_info['Papers']
-                if publications:
-                    most_cited_publication = max(publications, key=lambda x: x.get('Citation_Count', 0))
-                    st.write(f"**Title:** {most_cited_publication.get('Title', 'N/A')}")
-                    st.write(f"**Citations:** {most_cited_publication.get('Citation_Count', 'N/A')}")
-                    st.write(f"**Year:** {most_cited_publication.get('Year_of_Publication', 'N/A')}")
+                # Add more info about the top publication if available
+                # Add more info about the top publication if available
+                authors_details = most_cited_publication.get('Authors_Details', [])
+                if authors_details:
+                    if isinstance(authors_details, list):
+                        authors = ', '.join(author.get('Name', 'N/A') for author in authors_details)
+                        if all(author.get('Name') == 'N/A' for author in authors_details):
+                            authors = 'N/A'
+                    else:
+                        authors = ', '.join(authors_details)
+                        st.write(f"Authors: {authors}")
 
-                    authors_details = most_cited_publication.get('Authors_Details', [])
-                    st.write(f"**Venue:** {most_cited_publication.get('Venue_Name', 'N/A')}")
-                    st.write(f"**URL:** {most_cited_publication.get('Paper_URL', 'N/A')}")
+                st.write(f"Venue: {most_cited_publication.get('Venue_Name', 'N/A')}")
+                st.write(f"URL: {most_cited_publication.get('Paper_URL', 'N/A')}")
 
-        with right_column:
-            st.header("Top Co-Authors & Publications")
-            if 'Co-authors' in prof_info:
-                coauthors = prof_info['Co-authors']
-                top_coauthors = sorted(coauthors.items(), key=lambda item: item[1], reverse=True)[:5]
-                st.write("**Top Co-Authors:**")
-                for coauthor, collaborations in top_coauthors:
-                    st.write(f"{coauthor}, Collaborations: {collaborations}")
+        # Top Co-Authors (showing only the top three)
+        if 'Co-authors' in prof_info:
+            coauthors = prof_info['Co-authors']
+            # Sorting co-authors by collaborations, descending, and picking the top three
+            top_coauthors = sorted(coauthors.items(), key=lambda item: item[1], reverse=True)[:5]
+            st.write("Top Co-Authors:")
+            for coauthor, collaborations in top_coauthors:
+                st.write(f"Co-author: {coauthor}, Collaborations: {collaborations}")
 
-            if 'Publication_Types' in prof_info:
-                publication_types = prof_info['Publication_Types']
-                st.write("**Publication Types Distribution:**")
-                for pub_type, count in publication_types.items():
-                    st.write(f"{pub_type}: {count}")
+        # Publication Types Distribution (assuming 'Publication_Types' structure remains the same)
+        if 'Publication_Types' in prof_info:
+            publication_types = prof_info['Publication_Types']
+            st.write("Publication Types Distribution:")
+            for pub_type, count in publication_types.items():
+                st.write(f"{pub_type}: {count}")
 
-
-    G = nx.Graph()
-    professor_data = data.get(selected_professor, {})
-    co_authors = professor_data.get('Co-authors', {})
-
-    # Populate your graph with edges
-    for co_author in co_authors.keys():
-        G.add_edge(selected_professor, co_author)
-
-    # Position nodes using one of the layout options in NetworkX
-    pos = nx.spring_layout(G)
-
-    fig = go.FigureWidget()
-
-    with fig.batch_update():
-        fig.data = []  # Clear existing data
-
-        # Extract node positions for plotting
-        edge_x = []
-        edge_y = []
-        for edge in G.edges():
-            x0, y0 = pos[edge[0]]
-            x1, y1 = pos[edge[1]]
-            edge_x.extend([x0, x1, None])  # line breaks
-            edge_y.extend([y0, y1, None])  # line breaks
-
-        # Create edge traces
-        fig.add_trace(go.Scatter(
-            x=edge_x, y=edge_y,
-            line=dict(width=0.5, color='#888'),
-            hoverinfo='none',
-            mode='lines'))
-
-        # Create node traces
-        node_x = []
-        node_y = []
-        for node in G.nodes():
-            x, y = pos[node]
-            node_x.append(x)
-            node_y.append(y)
-
-        fig.add_trace(go.Scatter(
-            x=node_x, y=node_y,
-            mode='markers',
-            hoverinfo='text',
-            marker=dict(
-                showscale=True,
-                color=[len(G.adj[node]) for node in G.nodes()],
-                size=10,
-                line=dict(width=2)
-            ),
-            text=node
-        ))
-
-        # Update layout
-        fig.update_layout(
-            title='<br>Network graph of co-authorships',
-            titlefont_size=16,
-            showlegend=False,
-            hovermode='closest',
-            margin=dict(b=20,l=5,r=5,t=40),
-            annotations=[ dict(
-                text="This graph represents the co-author network of the selected professor.",
-                showarrow=False,
-                xref="paper", yref="paper",
-                x=0.005, y=-0.002 ) ],
-            xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-            yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
-        )
-
-        # Set text for nodes
-        for node in G.nodes():
-            fig.data[1].text = list(G.nodes())
-
-    # Display the network graph
-    fig.update_layout(autosize=True)
-    st.plotly_chart(fig, use_container_width=True)
-    
 elif page == "Dashboard 1: Professors":
     st.title("Dashboard 1: Professors")
 
@@ -407,6 +334,87 @@ elif page == "Dashboard 2: Analysis of fields of study":
 elif page == "Interactive graphs":
     st.title("Interactive graphs")
 
+#### Ego-Network
+    # Dropdown widget
+    selected_prof = st.selectbox("Select a Professor", list(data.keys()))
+
+    G = nx.Graph()
+    professor_data = data.get(selected_prof, {})
+    co_authors = professor_data.get('Co-authors', {})
+
+    # Populate your graph with edges
+    for co_author in co_authors.keys():
+        G.add_edge(selected_prof, co_author)
+
+    # Position nodes using one of the layout options in NetworkX
+    pos = nx.spring_layout(G)
+
+    fig = go.FigureWidget()
+
+    with fig.batch_update():
+        fig.data = []  # Clear existing data
+
+        # Extract node positions for plotting
+        edge_x = []
+        edge_y = []
+        for edge in G.edges():
+            x0, y0 = pos[edge[0]]
+            x1, y1 = pos[edge[1]]
+            edge_x.extend([x0, x1, None])  # line breaks
+            edge_y.extend([y0, y1, None])  # line breaks
+
+        # Create edge traces
+        fig.add_trace(go.Scatter(
+            x=edge_x, y=edge_y,
+            line=dict(width=0.5, color='#888'),
+            hoverinfo='none',
+            mode='lines'))
+
+        # Create node traces
+        node_x = []
+        node_y = []
+        for node in G.nodes():
+            x, y = pos[node]
+            node_x.append(x)
+            node_y.append(y)
+
+        fig.add_trace(go.Scatter(
+            x=node_x, y=node_y,
+            mode='markers',
+            hoverinfo='text',
+            marker=dict(
+                showscale=True,
+                color=[len(G.adj[node]) for node in G.nodes()],
+                size=10,
+                line=dict(width=2)
+            ),
+            text=node
+        ))
+
+        # Update layout
+        fig.update_layout(
+            title='<br>Network graph of co-authorships',
+            titlefont_size=16,
+            showlegend=False,
+            hovermode='closest',
+            margin=dict(b=20,l=5,r=5,t=40),
+            annotations=[ dict(
+                text="This graph represents the co-author network of the selected professor.",
+                showarrow=False,
+                xref="paper", yref="paper",
+                x=0.005, y=-0.002 ) ],
+            xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+            yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
+        )
+
+        # Set text for nodes
+        for node in G.nodes():
+            fig.data[1].text = list(G.nodes())
+
+    # Display the network graph
+    fig.update_layout(autosize=True)
+    st.plotly_chart(fig, use_container_width=True)
+
 #### Treemap graph
     rows = []
 
@@ -646,7 +654,7 @@ elif page == "Creative Visualization":
         st.title("Book Publications Visualization")
 
         # Hard-code the path to the book image that's already on the server
-        book_img_path = 'Creative Vis.png'  # Update this path
+        book_img_path = 'Creative Visualization/Creative Vis.png'  # Update this path
 
         # Process the image
         result_img = draw_overlay(book_img_path)
