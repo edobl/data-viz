@@ -294,7 +294,7 @@ elif page == "Dashboard 2: Analysis of fields of study":
         growth_rate = [(counts[i] - counts[i - 1]) / counts[i - 1] * 100 if i > 0 else 0 for i in range(len(counts))]
         growth_rate += [0] * (max_years - len(growth_rate))
         fields_growth_rate[field] = growth_rate[:max_years]
-    st.subheader('Comparison between temporal analysis of fields growth')
+    
     # Initialize the figure and output widget
     fig = go.Figure()
 
@@ -325,7 +325,7 @@ elif page == "Dashboard 2: Analysis of fields of study":
             fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor='LightBlue')
             fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor='LightBlue')
 
-        fig.update_layout(autosize=True)
+        fig.update_layout(title='Temporal Analysis of Field Growth', autosize=True)
         st.plotly_chart(fig, use_container_width=True)
 
 
@@ -353,7 +353,7 @@ elif page == "Dashboard 2: Analysis of fields of study":
                                 marker_color='#3569aa'))  # Set the color of the bars
 
     # Enhancing the chart appearance
-    fig.update_layout(title='Comparison of Citation Counts Across Fields',
+    fig.update_layout(title='Comparison of Publication counts Across Fields',
                     xaxis_tickangle=-45,
                     xaxis_title='Field of Study',
                     yaxis_title='Total Citation Counts',
