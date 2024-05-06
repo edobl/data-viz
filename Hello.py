@@ -66,7 +66,7 @@ if page == "Main Page":
             st.header("Top Co-Authors & Publications")
             if 'Co-authors' in prof_info:
                 coauthors = prof_info['Co-authors']
-                top_coauthors = sorted(coauthors.items(), key=lambda item: item[1], reverse=True)[:5]
+                top_coauthors = sorted(coauthors.items(), key=lambda item: item[1], reverse=True)[:3]
                 st.write("**Top Co-Authors:**")
                 for coauthor, collaborations in top_coauthors:
                     st.write(f"{coauthor}, Collaborations: {collaborations}")
