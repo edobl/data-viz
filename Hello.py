@@ -59,10 +59,6 @@ if selected_professor:
                     st.write(f"**Year:** {most_cited_publication.get('Year_of_Publication', 'N/A')}")
 
                     authors_details = most_cited_publication.get('Authors_Details', [])
-                    if authors_details:
-                        authors = ', '.join(author.get('Name', 'N/A') for author in authors_details if author.get('Name') != 'N/A')
-                        st.write(f"**Authors:** {authors if authors else 'N/A'}")
-
                     st.write(f"**Venue:** {most_cited_publication.get('Venue_Name', 'N/A')}")
                     st.write(f"**URL:** {most_cited_publication.get('Paper_URL', 'N/A')}")
 
