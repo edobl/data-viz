@@ -294,7 +294,7 @@ elif page == "Dashboard 2: Analysis of fields of study":
         growth_rate = [(counts[i] - counts[i - 1]) / counts[i - 1] * 100 if i > 0 else 0 for i in range(len(counts))]
         growth_rate += [0] * (max_years - len(growth_rate))
         fields_growth_rate[field] = growth_rate[:max_years]
-
+    st.subheader('Comparison between temporal analysis of fields growth')
     # Initialize the figure and output widget
     fig = go.Figure()
 
