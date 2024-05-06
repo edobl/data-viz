@@ -87,7 +87,7 @@ if page == "Main Page":
 
     # Populate your graph with edges
     for co_author in co_authors.keys():
-        G.add_edge(selected_prof, co_author)
+        G.add_edge(selected_professor, co_author)
 
     # Position nodes using one of the layout options in NetworkX
     pos = nx.spring_layout(G)
