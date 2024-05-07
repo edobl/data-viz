@@ -271,7 +271,6 @@ elif page == "Dashboard 2: Analysis of fields of study":
     st.title("Dashboard 2: Analysis of fields of study")
 
 ##### Comparison between temporal analysis of fields growth
-    # Publication Trends by Field
     field_publications = {}
     for prof_data in data.values():
         for paper in prof_data.get('Papers', []):
@@ -287,55 +286,60 @@ elif page == "Dashboard 2: Analysis of fields of study":
                         field_publications[field][year] = 1
 
     fields_growth_rate = {}
+    fields_base_years = {}
     max_years = max(len(publications) for publications in field_publications.values())
     for field, publications in field_publications.items():
         years = sorted(publications.keys())
+        base_year = min(years)
+        fields_base_years[field] = base_year
         counts = [publications[year] for year in years]
         growth_rate = [(counts[i] - counts[i - 1]) / counts[i - 1] * 100 if i > 0 else 0 for i in range(len(counts))]
         growth_rate += [0] * (max_years - len(growth_rate))
         fields_growth_rate[field] = growth_rate[:max_years]
-    
-    # Initialize the figure and output widget
+
     fig = go.Figure()
 
-    # Function to update the plot based on dropdown selections
     def update_plot(field1, field2):
-        # Initialize a new figure to start fresh
         fig = go.Figure()
 
-        years = list(range(1, max_years + 1))
-        if field1:  # Add the first field if selected
-            fig.add_trace(go.Scatter(x=years, y=fields_growth_rate[field1],
-                                     mode='lines+markers', name=field1,
-                                     line=dict(color='#3569aa')))
-        if field2:  # Add the second field if selected
-            fig.add_trace(go.Scatter(x=years, y=fields_growth_rate[field2],
-                                     mode='lines+markers', name=field2,
-                                     line=dict(color='lightblue')))
+        if field1:
+            years = list(range(fields_base_years[field1], fields_base_years[field1] + max_years))
+            years = [y for y in years if y <= 2020]  # Limit to year 2020
+            rel_years = [y - fields_base_years[field1] for y in years]  # Relative years since first publication
+            tick_values = [i for i, year in enumerate(years) if (year - fields_base_years[field1]) % 5 == 0]
+            tick_texts = [f"{i} = {year}" for i, year in enumerate(years) if (year - fields_base_years[field1]) % 5 == 0]
+            fig.add_trace(go.Scatter(x=rel_years, y=fields_growth_rate[field1][:len(years)],
+                                    mode='lines+markers', name=f'{field1} (started {fields_base_years[field1]})',
+                                    line=dict(color='#3569aa')))
+        if field2:
+            years = list(range(fields_base_years[field2], fields_base_years[field2] + max_years))
+            years = [y for y in years if y <= 2020]
+            rel_years = [y - fields_base_years[field2] for y in years]
+            tick_values += [i for i, year in enumerate(years) if (year - fields_base_years[field2]) % 5 == 0]
+            tick_texts += [f"{i} = {year}" for i, year in enumerate(years) if (year - fields_base_years[field2]) % 5 == 0]
+            fig.add_trace(go.Scatter(x=rel_years, y=fields_growth_rate[field2][:len(years)],
+                                    mode='lines+markers', name=f'{field2} (started {fields_base_years[field2]})',
+                                    line=dict(color='lightblue')))
 
-        # Update layout only if at least one field is selected
         if field1 or field2:
             fig.update_layout(
                 title='Temporal Analysis of Field Growth',
-                xaxis_title='Year',
+                xaxis_title='Years since first publication',
                 yaxis_title='Growth Rate (%)',
                 legend_title='Field',
                 template='plotly_white'
             )
-            fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor='LightBlue')
+            fig.update_xaxes(tickvals=tick_values, ticktext=tick_texts)
             fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor='LightBlue')
 
-        fig.update_layout(title='Temporal Analysis of Field Growth', autosize=True)
+        fig.update_layout(autosize=True)
         st.plotly_chart(fig, use_container_width=True)
 
-
-    # Dropdown widgets for field selection
     dropdown1 = st.selectbox('Field 1', [None] + list(fields_growth_rate.keys()))
     dropdown2 = st.selectbox('Field 2', [None] + list(fields_growth_rate.keys()))
 
-    # Arrange the dropdowns and the plot output in a vertical layout
     update_plot(dropdown1, dropdown2)
-
+    
 #### Citation count for each field of study
     # Comparison of Citation Counts Across Fields
     field_citation_counts = {}
