@@ -43,34 +43,30 @@ def load_data():
         return {}
 
 
-# Load data
-data = load_data()
-
-# Ensure there is a default value for prof_info
-prof_info = {}
-
-# Prepare professor names for selection
-professors_names = list(data.keys()) if data else []
-
-
-
-# Check if a valid professor has been selected and update prof_info accordingly
-if selected_professor in data:
-    prof_info = data[selected_professor]
-
-# Check to ensure prof_info is properly populated or set to a default empty dictionary
-if not prof_info:
-    prof_info = {}
 # Page Navigation
 if page == "Main Page":
     st.title("Professor's Metrics")
 
-    # Professor selection and information display
+    # Load data
+    data = load_data()
+    
+    # Ensure there is a default value for prof_info
+    prof_info = {}
+    
+    # Prepare professor names for selection
+    professors_names = list(data.keys()) if data else []
+    
     # Dropdown to select a professor
     selected_professor = st.selectbox('Select a Professor', professors_names)
-    if selected_professor:
+    
+    # Check if a valid professor has been selected and update prof_info accordingly
+    if selected_professor in data:
         prof_info = data[selected_professor]
-        
+    
+    # Check to ensure prof_info is properly populated or set to a default empty dictionary
+    if not prof_info:
+        prof_info = {}
+            
     with st.container():
         st.write("---")
         left_column, middle_column, right_column = st.columns(3)
