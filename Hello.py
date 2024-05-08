@@ -17,56 +17,25 @@ st.set_page_config(page_title="Professor's Dashboard", layout="wide")
 st.sidebar.title("Choose a Page")
 page = st.sidebar.selectbox("", ["Main Page", "Dashboard 1: Professors", "Dashboard 2: Analysis of fields of study", "Interactive graphs", "Creative Visualization"])
 
-try:
-    if st.button('Clear Cache'):
-        st.caching.clear_cache()
-        st.experimental_rerun()
-except Exception as e:
-    st.error(f"Failed to clear cache: {e}")
-st.write("Cache cleared and app rerun.")
-
 # Load the JSON data with caching
-@st.cache
+@st.cache_data()  # Use caching to load the data only once
 def load_data():
-    try:
-        with open('professors_data.json', 'r') as file:
-            content = file.read()
-            if not content:
-                st.error("JSON file is empty.")
-                return {}  # Return empty dictionary if the file is empty
-            return json.loads(content)
-    except json.JSONDecodeError as e:
-        st.error(f"Invalid JSON: {e}")
-        return {}
-    except Exception as e:
-        st.error(f"An unexpected error occurred: {e}")
-        return {}
+    with open('professors_data.json', 'r') as file:
+        data = json.load(file)
+    return data
 
+data = load_data()
+professors_names = list(data.keys())
 
 # Page Navigation
 if page == "Main Page":
     st.title("Professor's Metrics")
 
-    # Load data
-    data = load_data()
-    
-    # Ensure there is a default value for prof_info
-    prof_info = {}
-    
-    # Prepare professor names for selection
-    professors_names = list(data.keys()) if data else []
-    
-    # Dropdown to select a professor
+    # Professor selection and information display
     selected_professor = st.selectbox('Select a Professor', professors_names)
-    
-    # Check if a valid professor has been selected and update prof_info accordingly
-    if selected_professor in data:
+    if selected_professor:
         prof_info = data[selected_professor]
-    
-    # Check to ensure prof_info is properly populated or set to a default empty dictionary
-    if not prof_info:
-        prof_info = {}
-            
+        
     with st.container():
         st.write("---")
         left_column, middle_column, right_column = st.columns(3)
