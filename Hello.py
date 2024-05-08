@@ -17,6 +17,10 @@ st.set_page_config(page_title="Professor's Dashboard", layout="wide")
 st.sidebar.title("Choose a Page")
 page = st.sidebar.selectbox("", ["Main Page", "Dashboard 1: Professors", "Dashboard 2: Analysis of fields of study", "Interactive graphs", "Creative Visualization"])
 
+if st.button('Clear Cache'):
+    st.legacy_caching.clear_cache()
+    st.experimental_rerun()
+
 # Load the JSON data with caching
 @st.cache
 def load_data():
