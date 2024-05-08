@@ -52,8 +52,7 @@ prof_info = {}
 # Prepare professor names for selection
 professors_names = list(data.keys()) if data else []
 
-# Dropdown to select a professor
-selected_professor = st.selectbox('Select a Professor', professors_names)
+
 
 # Check if a valid professor has been selected and update prof_info accordingly
 if selected_professor in data:
@@ -67,6 +66,7 @@ if page == "Main Page":
     st.title("Professor's Metrics")
 
     # Professor selection and information display
+    # Dropdown to select a professor
     selected_professor = st.selectbox('Select a Professor', professors_names)
     if selected_professor:
         prof_info = data[selected_professor]
