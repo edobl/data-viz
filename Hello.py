@@ -20,17 +20,20 @@ page = st.sidebar.selectbox("", ["Main Page", "Dashboard 1: Professors", "Dashbo
 # Load the JSON data with caching
 @st.cache
 def load_data():
-    with open('professors_data.json', 'r') as file:
-        content = file.read()
-        if not content:
-            st.error("JSON file is empty.")
-            return {}
-        print("File Content:", content)  # Log the content to check its validity
-        try:
+    try:
+        with open('professors_data.json', 'r') as file:
+            content = file.read()
+            if not content:
+                st.error("JSON file is empty.")
+                return {}  # Return empty dictionary if the file is empty
             return json.loads(content)
-        except json.JSONDecodeError as e:
-            st.error(f"Invalid JSON: {e}")
-            return {}
+    except json.JSONDecodeError as e:
+        st.error(f"Invalid JSON: {e}")
+        return {}
+    except Exception as e:
+        st.error(f"An unexpected error occurred: {e}")
+        return {}
+
 
 
 
